@@ -5,19 +5,20 @@ public enum Constant {
 	NOT_FOUND(404, "NOT FOUND"),
 	NO_PARAM(6001, "NO PARAM"),
 	OBJECT_IS_NULL(1009, "OBJECT IS NULL"),
+	LOGIN_FALSE(2023, "LOGIN IS FALSE"),
 	NO_CONTENT(2004, "NO CONTENT");
 	
 	private int code;
-	private String massage;
+	private String message;
 	public int getCode() {
 		return code;
 	}
-	public String getMassage() {
-		return massage;
+	public String getMessage() {
+		return message;
 	}
-	private Constant(int code, String massage) {
+	private Constant(int code, String message) {
 		this.code = code;
-		this.massage = massage;
+		this.message = message;
 	}
 	
 	

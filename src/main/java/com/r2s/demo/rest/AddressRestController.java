@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,12 +31,14 @@ public class AddressRestController extends BaseRestController{
 	private AddressService addressService;
 	@Autowired
 	private CartRepository cartRepository;
+	
 	@GetMapping
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<?> getAllAddress() {
 		try {
 			List<Address> addresses = this.addressService.getAllAddress();
 			if(ObjectUtils.isEmpty(addresses)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(addresses);
 			
@@ -43,15 +46,16 @@ public class AddressRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
+	@PreAuthorize("hasAnyRole('USER')")
 	@PostMapping
 	public ResponseEntity<?> addAddress(@RequestParam(name = "userId") long id, @RequestBody Map<String, Object> address) {
 		try {
 			
 			if(ObjectUtils.isEmpty(address)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(this.addressService.addAddress(id, address));
 			
@@ -59,26 +63,28 @@ public class AddressRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
+	@PreAuthorize("hasAnyRole('USER')")
 	@PutMapping
 	public ResponseEntity<?> updateAddress(@RequestParam(name = "addressId") long id, @RequestBody Map<String, Object> address) {
 		try {
 			if(ObjectUtils.isEmpty(address)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			if(ObjectUtils.isEmpty(this.addressService.findAddress(id))) {
-				return super.eror(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMassage());
+				return super.error(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMessage());
 			}
 			return super.success(this.addressService.updateAddress(id, address));	
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
+	@PreAuthorize("hasAnyRole('USER')")
 	@DeleteMapping
 	public ResponseEntity<?> deleteAddress(@RequestParam(name = "addressId") long id){
 		try {
@@ -87,11 +93,11 @@ public class AddressRestController extends BaseRestController{
 				this.addressService.deleteAddress(id);
 				return success(address);
 			}
-			return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+			return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 }

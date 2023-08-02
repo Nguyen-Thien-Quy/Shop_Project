@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,53 +31,57 @@ public class ProductRestcontroller extends BaseRestController{
 	private ProductService productService;
 	
 	@GetMapping
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<?> getAllProduct(){
 		try {
 			List<Product> products = this.productService.getAllProduct();
 			List<ProductDTO> responses = products.stream().map(ProductDTO::new).toList();
 			
 			if(ObjectUtils.isEmpty(responses)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return success(responses);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PostMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> AddProduct(@RequestParam(name = "categoryId") long id, @RequestBody Map<String, Object> product){
 		try {	
 			if(ObjectUtils.isEmpty(product)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(this.productService.addProduct(id, product));
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PutMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> updateProduct(@RequestParam(name = "productId") long id, @RequestBody Map<String, Object> product){
 		try {	
 			if(ObjectUtils.isEmpty(product) || ObjectUtils.isEmpty(this.productService.findProductById(id))) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(this.productService.updateProduct(id, product));
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@DeleteMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> deleteProduct(@RequestParam(name = "productId") long id){
 		try {
 			Product product= this.productService.findProductById(id);
 			if(ObjectUtils.isEmpty(product)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			this.productService.deleteProduct(id);
 			return success(product);
@@ -84,6 +89,6 @@ public class ProductRestcontroller extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 }

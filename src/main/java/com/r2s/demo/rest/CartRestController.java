@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,12 +32,13 @@ public class CartRestController extends BaseRestController{
 	@Autowired
 	private UserServices userServices;
 	
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<?> getAllCart() {
 		try {
 			List<Cart> carts = this.cartService.getAllCart();
 			if(ObjectUtils.isEmpty(carts)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(carts);
 			
@@ -44,29 +46,30 @@ public class CartRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@GetMapping("/findCartLineItem")
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<?> getAllCartLineItem(@RequestParam(name = "cartId") long cartId, @RequestParam(name = "status") int status) {
 		try {
 			if(status == 0) {
 				Cart cart = this.cartService.findCartById(cartId);
 				if(ObjectUtils.isEmpty(cart)) {
-					return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+					return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 				}
 				return super.success(this.cartService.findAllByDeleted(false, cart.getCartlineItems()));
 			} else
 			if(status == 1) {
 				Cart cart = this.cartService.findCartById(cartId);
 				if(ObjectUtils.isEmpty(cart)) {
-					return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+					return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 				}
 				return super.success(this.cartService.findAllByDeleted(true, cart.getCartlineItems()));
 			}else {
 				Cart cart = this.cartService.findCartById(cartId);
 				if(ObjectUtils.isEmpty(cart)) {
-					return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+					return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 				}
 				return this.success(cart.getCartlineItems());
 			}
@@ -74,15 +77,16 @@ public class CartRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PostMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	public ResponseEntity<?> addCart(@RequestParam(name = "userId") long id) {
 		try {
 			
 			if(ObjectUtils.isEmpty(this.userServices.findUserById(id))) {
-				return super.eror(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMassage());
+				return super.error(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMessage());
 			}
 			return super.success(this.cartService.addCart(id));
 			
@@ -90,14 +94,15 @@ public class CartRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PostMapping("/addProduct")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	public ResponseEntity<?> addProductOnCart(@RequestParam(name = "cartId") long cartId, @RequestParam(name = "variantProductId") long variantProductId) {
 		try {
 			if(ObjectUtils.isEmpty(this.cartService.findCartById(cartId))) {
-				return super.eror(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMassage());
+				return super.error(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMessage());
 			}
 			
 			Cart cart = this.cartService.addProductOnCart(cartId, variantProductId);
@@ -106,27 +111,29 @@ public class CartRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PutMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	public ResponseEntity<?> updateCart(@RequestParam(name = "cartId") long id, @RequestBody Map<String, Object> cart) {
 		try {
 			if(ObjectUtils.isEmpty(cart)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			if(ObjectUtils.isEmpty(this.cartService.findCartById(id))) {
-				return super.eror(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMassage());
+				return super.error(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMessage());
 			}
 			return super.success(this.cartService.updateCart(id, cart));	
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@DeleteMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	public ResponseEntity<?> deleteCart(@RequestParam(name = "cartId") long id){
 		try {
 			Cart cart = this.cartService.findCartById(id);
@@ -134,11 +141,11 @@ public class CartRestController extends BaseRestController{
 				this.cartService.deleteCart(id);
 				return super.success(cart);
 			}
-			return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+			return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 }

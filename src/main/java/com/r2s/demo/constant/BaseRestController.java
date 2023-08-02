@@ -15,10 +15,10 @@ public class BaseRestController {
 		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.OK);
 	}
 	
-	public ResponseEntity<Map<String, Object>> eror(int code, String massage){
+	public ResponseEntity<Map<String, Object>> error(int code, String message){
 		Map<String, Object> response = new HashMap<>();
 		response.put("code", code);
-		response.put("massage", massage);
+		response.put("massage", message);
 		response.put("data", null);
 		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.OK);
 	}

@@ -25,7 +25,7 @@ public class Product {
 	
 	private String name;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	@JoinColumn(name = "categoryId")
 	private Category category;

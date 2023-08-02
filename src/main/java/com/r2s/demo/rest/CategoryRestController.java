@@ -9,6 +9,7 @@ import javax.swing.text.AbstractDocument.Content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +33,13 @@ public class CategoryRestController extends BaseRestController{
 	private CategoryService categoryService;
 	
 	@GetMapping
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<?> getAllCategory(){
 		try {
 			List<Category> categories = this.categoryService.getAllCategory();
 			
 			if(ObjectUtils.isEmpty(categories)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			
 			return super.success(categories);
@@ -45,14 +47,15 @@ public class CategoryRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PostMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> addCategory(@RequestBody Map<String, Object> category){
 		try {
 			if(ObjectUtils.isEmpty(category)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			
 			return super.success(this.categoryService.addCategory(category));
@@ -60,14 +63,15 @@ public class CategoryRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PutMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> updateCategory(@RequestParam(name = "id") long id, @RequestBody Map<String, Object> category){
 		try {
 			if(ObjectUtils.isEmpty(category) || ObjectUtils.isEmpty(this.categoryService.findById(id))) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			
 			return super.success(this.categoryService.updateCategory(id, category));
@@ -75,15 +79,16 @@ public class CategoryRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@DeleteMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> deleteCategory(@RequestParam(name = "id") long id){
 		try {
 			Category category= this.categoryService.findById(id);
 			if(ObjectUtils.isEmpty(category)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			this.categoryService.deleteCategory(id);
 			return success(category);
@@ -91,6 +96,6 @@ public class CategoryRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 }

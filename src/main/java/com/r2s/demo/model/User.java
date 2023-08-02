@@ -1,6 +1,7 @@
 package com.r2s.demo.model;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -11,6 +12,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -31,9 +35,10 @@ public class User {
 	private String displayName;
 	private String email;
 	
-	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	@JsonManagedReference
-	private List<RoleUser> roleUsers;
+	private Set<Role> roles;
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonManagedReference
@@ -83,13 +88,6 @@ public class User {
 		this.email = email;
 	}
 
-	public List<RoleUser> getRoleUsers() {
-		return roleUsers;
-	}
-
-	public void setRoleUsers(List<RoleUser> roleUsers) {
-		this.roleUsers = roleUsers;
-	}
 
 	public Cart getCart() {
 		return cart;
@@ -106,8 +104,19 @@ public class User {
 	public void setAddress(List<Address> address) {
 		this.address = address;
 	}
+	public Set<Role> getRoles() {
+		return roles;
+	}
 
-	public User(Long id, String userName, String password, String displayName, String email, List<RoleUser> roleUsers,
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+
+	public User() {
+		super();
+	}
+
+	public User(Long id, String userName, String password, String displayName, String email, Set<Role> roles,
 			List<Address> address, Cart cart) {
 		super();
 		this.id = id;
@@ -115,13 +124,9 @@ public class User {
 		this.password = password;
 		this.displayName = displayName;
 		this.email = email;
-		this.roleUsers = roleUsers;
+		this.roles = roles;
 		this.address = address;
 		this.cart = cart;
-	}
-
-	public User() {
-		super();
 	}
 
 	

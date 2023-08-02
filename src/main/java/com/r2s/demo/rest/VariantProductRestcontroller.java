@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,65 +35,69 @@ public class VariantProductRestcontroller extends BaseRestController{
 	private ProductService productService;
 	
 	@GetMapping
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	public ResponseEntity<?> getAllVariantproduct(){
 		try {
 			List<VariantProduct> variantProducts = this.variantProductService.getAllVariantProduct();
 			List<VariantProductDTO> responses = variantProducts.stream().map(VariantProductDTO::new).toList();
 			
 			if(ObjectUtils.isEmpty(responses)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(responses);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PostMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> addVariantProduct(@RequestParam(name = "productId") long id, @RequestBody Map<String, Object> variantProduct){
 		try {
 			if(ObjectUtils.isEmpty(this.productService.findProductById(id))) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			
 			if(ObjectUtils.isEmpty(variantProduct)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(this.variantProductService.addVariantProduct(id, variantProduct));
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	@PutMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> updateVariantproduct(@RequestParam(name = "variantProductId") long id, @RequestBody Map<String, Object> variantProduct){
 		try {
 			if(ObjectUtils.isEmpty(this.variantProductService.findVariantProduct(id))) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			
 			if(ObjectUtils.isEmpty(variantProduct)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(this.variantProductService.updateVariantProduct(id, variantProduct));
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
 	
 	@DeleteMapping
+	@PreAuthorize("hasAnyRole('USER')")
 	public ResponseEntity<?> deleteVariantproduct(@RequestParam(name = "productId") long id){
 		try {
 			VariantProduct variantProduct = this.variantProductService.findVariantProduct(id);
 			if(ObjectUtils.isEmpty(variantProduct)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			this.variantProductService.deleteVariantProduct(id);
 			return super.success(variantProduct);
@@ -100,6 +105,6 @@ public class VariantProductRestcontroller extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,13 +31,14 @@ public class UserRestController extends BaseRestController{
 	@Autowired
 	private UserServices userServices;
 	
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<?> getAllUser() {
 		try {
 			List<User> users = this.userServices.getAllUser();
 			List<UserAddressDTO> responses = users.stream().map(UserAddressDTO::new).toList();
 			if(ObjectUtils.isEmpty(responses)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(responses);
 			
@@ -44,14 +46,15 @@ public class UserRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<?> addUser(@RequestBody Map<String, Object> user) {
 		try {
 			if(ObjectUtils.isEmpty(user)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			return super.success(this.userServices.addUser(user));
 			
@@ -59,9 +62,10 @@ public class UserRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
+	@PreAuthorize("hasAnyRole('USER')")
 	@PostMapping("/makeOrder")
 	public ResponseEntity<?> makeOser(@RequestParam(name = "userId") long id,@RequestBody Map<String, Object> order) {
 		try {
@@ -69,7 +73,7 @@ public class UserRestController extends BaseRestController{
 //				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
 //			}
 			if(ObjectUtils.isEmpty(this.userServices.findUserById(id))) {
-				return super.eror(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMassage());
+				return super.error(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMessage());
 			}
 			Order newOrder = this.userServices.makeOrder(id, order);
 			return super.success(new UserOrderDTO(newOrder));
@@ -78,26 +82,27 @@ public class UserRestController extends BaseRestController{
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 	
+	@PreAuthorize("hasAnyRole('USER')")
 	@PutMapping
 	public ResponseEntity<?> updateUser(@RequestParam(name = "id") long id, @RequestBody Map<String, Object> user) {
 		try {
 			if(ObjectUtils.isEmpty(user)) {
-				return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+				return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 			}
 			if(ObjectUtils.isEmpty(this.userServices.findUserById(id))) {
-				return super.eror(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMassage());
+				return super.error(Constant.NOT_FOUND.getCode(), Constant.NOT_FOUND.getMessage());
 			}
 			return super.success(this.userServices.updateUser(id, user));	
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
-	
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@DeleteMapping
 	public ResponseEntity<?> deleteUser(@RequestParam(name = "id") long id){
 		try {
@@ -106,11 +111,11 @@ public class UserRestController extends BaseRestController{
 				this.userServices.deleteUser(id);
 				return success(user);
 			}
-			return super.eror(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMassage());
+			return super.error(Constant.OBJECT_IS_NULL.getCode(), Constant.OBJECT_IS_NULL.getMessage());
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return super.eror(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMassage());
+		return super.error(Constant.NO_CONTENT.getCode(), Constant.NO_CONTENT.getMessage());
 	}
 }

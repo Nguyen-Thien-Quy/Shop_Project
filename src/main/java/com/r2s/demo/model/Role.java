@@ -1,7 +1,9 @@
 package com.r2s.demo.model;
 
 import java.util.List;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -10,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -23,9 +26,9 @@ public class Role {
 	private String name;
 	private String description;
 
-	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JsonManagedReference
-	List<RoleUser> roleUsers;
+	@ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+	@JsonBackReference
+	private Set<User> users;
 
 	public Long getId() {
 		return id;
@@ -50,25 +53,26 @@ public class Role {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
 
-	public List<RoleUser> getRoleUsers() {
-		return roleUsers;
+	public Set<User> getUsers() {
+		return users;
 	}
 
-	public void setRoleUsers(List<RoleUser> roleUsers) {
-		this.roleUsers = roleUsers;
-	}
-
-	public Role(Long id, String name, String description, List<RoleUser> roleUsers) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.roleUsers = roleUsers;
+	public void setUsers(Set<User> users) {
+		this.users = users;
 	}
 
 	public Role() {
 		super();
+	}
+
+	public Role(Long id, String name, String description, Set<User> users) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.users = users;
 	}
 	
 	

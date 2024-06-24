@@ -2,8 +2,10 @@
 - Đồ án môn học - Xây dựng backend cho trang web bán hàng
 
 - Thông tin liên hệ: quythiennguyen.cv@gmail.com
-
-## Mô tả đề tài
+## Các thư viện sử dụng
+- Spring data JPA: Kết nối database với mySQL
+- Spring security JWT: Phân quyền và bảo mật cho trang web
+### Mô tả đề tài
 - Mục tiêu đề tài: Viết các API cho ứng dụng website giúp người sử dụng có thể mua và bán các sản phẩm trực tuyến. Cùng với đó ADMIN có thể quản lý các người dùng và sản phẩm của họ
 - 2 roles chính: User và Admin
 - Dữ cần quản lý: Thông tin người dùng, Sản phẩm người dùng mua bán, thông tin của các sản phẩm
